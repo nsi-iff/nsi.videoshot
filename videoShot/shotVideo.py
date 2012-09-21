@@ -64,7 +64,7 @@ class ShotVideo(object):
         frameC = cvQueryFrame(capture)
         return frameA, frameB, frameC
         
-    def shotDetect(self,queue, capture, sensitivity, number_frame, frames_bloc, file_name, file_name_save, file_video_save, file_atual, ncpu, ncpus): 
+    def shotDetect(self,queue, capture, sensitivity, number_frame, frames_bloc, file_name, file_name_save, file_video_save, ncpu, ncpus): 
         self.number_frame = number_frame
         self.fps = cvGetCaptureProperty(capture, CV_CAP_PROP_FPS)
         histogramPolitic = HistogramPolitic()

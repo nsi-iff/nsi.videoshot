@@ -10,7 +10,7 @@ from multiprocessing import Process, cpu_count, Queue
 class VideoProcess(object):
  
     
-    def create_video_process(self, captures, sensitivity, frames_bloc, FileName, fileNameSave, fileVideoSave, file_atual, ncpus, queue_list):
+    def create_video_process(self, captures, sensitivity, frames_bloc, FileName, fileNameSave, fileVideoSave, ncpus, queue_list):
         shotvideo = ShotVideo()
         processos = {}
         for i in range(1, ncpus + 1):
@@ -20,7 +20,7 @@ class VideoProcess(object):
             else:
                 number_frame = frames_bloc * (i - 1)	    	
             processos[i] = Process(target = shotvideo.shotDetect, args = (queue_list[i-1],captures[i], \
-                sensitivity, number_frame, frames_bloc * i + 1, FileName, fileNameSave, fileVideoSave, file_atual, i, ncpus))
+                sensitivity, number_frame, frames_bloc * i + 1, FileName, fileNameSave, fileVideoSave, i, ncpus))
         self.start_video_process(processos,ncpus)
     
     def start_video_process(self,processos,ncpus):
@@ -29,11 +29,11 @@ class VideoProcess(object):
         for i in range(1,ncpus+1):   
             processos[i].join()
             
-    def create_cut_process(self,FileName,fileVideoSave,file_atual,corte,ncpus):
+    def create_cut_process(self,FileName,fileVideoSave,corte,ncpus):
         cutvideo = CutVideo()
         processos2 = {}
         for i in range(1,ncpus+1):
-            processos2[i]=Process(target=cutvideo.cut_video, args=(FileName, fileVideoSave, file_atual,corte[i-1],i))  
+            processos2[i]=Process(target=cutvideo.cut_video, args=(FileName, fileVideoSave,corte[i-1],i))  
         self.start_cut_process(processos2,ncpus)
  
     def start_cut_process(self,processos2,ncpus):

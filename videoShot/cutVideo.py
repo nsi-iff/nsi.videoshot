@@ -4,7 +4,7 @@ import time
 class CutVideo(object):
     
     
-    def cut_video(self,file_name, file_video_save, file_atual,corte,x):
+    def cut_video(self,file_name, file_video_save, corte, x):
         for i in range(len(corte)-1):
             inicio = corte[i]
             duracao = corte[i + 1] - inicio - 0.2

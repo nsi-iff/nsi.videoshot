@@ -1,4 +1,4 @@
 from videoSegmentation import *
 
 def vs():
-	videoShot(sys.argv)
+	video_shot(sys.argv)
