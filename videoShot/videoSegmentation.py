@@ -59,6 +59,7 @@ def split_video(temporary_directory, ncpus, video_duration, ogg_video_path):
         os.system('ffmpeg -i ' + ogg_video_path + ' -acodec copy -vcodec copy -ss ' + str(cut_list[n]) + ' -t ' + str(cut_list[n+1] - cut_list[n]) + ' ' + temporary_directory + '/video__' + str(n+1) + '.ogv > /dev/null 2>&1')
 
 def video_shot(args):
+	start_time = time.time()
 	captures = {}
 	cut_list = []
 	cut_video = CutVideo()
@@ -66,7 +67,6 @@ def video_shot(args):
 	ncpus = cpu_count()
 	queue_list = []
 	sensitivity = 0.35
-	start_time = time.time()
 	temporary = Temporary()
 	video_process = VideoProcess()
 	try:
@@ -76,7 +76,9 @@ def video_shot(args):
 		sys.exit('Usage: videoShot -i <inputFile> -o <outputDirectory>')
 	temporary_directory = temporary.createDirectory()
 	print "Converting video to ogg..."
+	start_time2 = time.time()
 	convert_video_to_ogg(file_input_name, temporary_directory)
+	start_time3 = time.time()
 	ogg_video_path = temporary_directory + "/video_converted.ogg"
 	output_segmentation_directory = output_directory + '/segmentation_video/'
 	file_name_save = (output_segmentation_directory + '/transitions_video/')
@@ -104,5 +106,9 @@ def video_shot(args):
 	print "Generating Segments..."
 	video_process.create_cut_process(file_input_name, file_video_save, time_cut_list, ncpus)
 	get_output_audio(file_audio_save, ogg_video_path)
+	temporary.removeDirectory(temporary_directory)
+	print 
+	print "Conversion Time: %.2f s" % (start_time3 - start_time2)
+	print "Segmentation Time: %.2f s" % ((time.time() - start_time) - (start_time3 - start_time2)) 
 	print "Segmentation completed in : %.2f s" % (time.time() - start_time) 
 	       
