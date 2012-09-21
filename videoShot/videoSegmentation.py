@@ -35,10 +35,11 @@ def videoShot(args):
 	print "Converting video to ogg..."
 	os.system("ffmpeg -i " + FileName + " -acodec libvorbis -vcodec libtheora " + temporary_directory +"/video_converted.ogg > /dev/null 2>&1")	
 	video_converted = temporary_directory +"/video_converted.ogg"
-	fileNameSave = (output + '/transitions_video/')
-	fileVideoSave = (output + '/parts_videos/')
-	fileAudioSave = (output + '/video_audio/')
-	for files in (fileNameSave, fileVideoSave, fileAudioSave):
+	directory = output + '/segmentation_video/'
+	fileNameSave = (output + '/segmentation_video/transitions_video/')
+	fileVideoSave = (output + '/segmentation_video/parts_videos/')
+	fileAudioSave = (output + '/segmentation_video/video_audio/')
+	for files in (directory,fileNameSave, fileVideoSave, fileAudioSave):
 		try:
 			shutil.rmtree(files)
 		except:
