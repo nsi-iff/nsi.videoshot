@@ -13,10 +13,8 @@ from process import VideoProcess
 from shotVideo import InitExtract
 from temporary import Temporary
 
-def get_video_duration(filePath):
-        time = commands.getoutput("ffmpeg -i " + filePath + " 2>&1 | grep Duration")
-        time = time[12:20].split(':')
-        return (int(time[0]) * 3600) + (int(time[1]) * 60) + (int(time[2]))
+def convert_video_to_ogg(file_input_name, temporary_directory):
+	os.system("ffmpeg -i " + file_input_name + " -acodec libvorbis -vcodec libtheora " + temporary_directory +"/video_converted.ogg > /dev/null 2>&1")	
 
 def create_directory(output_segmentation_directory, file_name_save, file_video_save, file_audio_save):
 	for files in (output_segmentation_directory, file_name_save, file_video_save, file_audio_save):
@@ -26,9 +24,6 @@ def create_directory(output_segmentation_directory, file_name_save, file_video_s
 			pass
 		os.mkdir(files)
 	
-def convert_video_to_ogg(file_input_name, temporary_directory):
-	os.system("ffmpeg -i " + file_input_name + " -acodec libvorbis -vcodec libtheora " + temporary_directory +"/video_converted.ogg > /dev/null 2>&1")	
-
 def get_output_audio(file_audio_save, ogg_video_path):
 	os.system("cd " + file_audio_save + "&& oggSplit " + ogg_video_path + " > /dev/null")
 	codec_list_ex = ['theora_','vorbis_']
@@ -39,6 +34,29 @@ def get_output_audio(file_audio_save, ogg_video_path):
 		ogg_paths.append(os.path.join(file_audio_save, list_files[i]))
 	os.system("rm -f " + ogg_paths[0])
 	os.system("mv " + ogg_paths[1] + " " + file_audio_save + "/" + "audio_video.oga" )
+
+def get_video_duration(filePath):
+        time = commands.getoutput("ffmpeg -i " + filePath + " 2>&1 | grep Duration")
+        time = time[12:20].split(':')
+        return (int(time[0]) * 3600) + (int(time[1]) * 60) + (int(time[2]))
+
+def get_videos_path(tempdir):
+        list_videos = filter(lambda _file: _file.startswith('video__'), os.listdir(tempdir))
+        list_videos.sort()
+        list_path = []
+        for n in range(len(list_videos)):
+            list_path.append(str(os.path.join(tempdir, list_videos[n])))
+        return list_path
+
+def split_video(temporary_directory, ncpus, video_duration, ogg_video_path):
+    remainder = video_duration % ncpus 
+    cut_time = (video_duration - remainder) / ncpus
+    cut_list = []
+    for n in range(ncpus):
+        cut_list.append(cut_time * n)
+    cut_list.append(video_duration)
+    for n in range(ncpus):
+        os.system('ffmpeg -i ' + ogg_video_path + ' -acodec copy -vcodec copy -ss ' + str(cut_list[n]) + ' -t ' + str(cut_list[n+1] - cut_list[n]) + ' ' + temporary_directory + '/video__' + str(n+1) + '.ogv > /dev/null 2>&1')
 
 def video_shot(args):
 	captures = {}
@@ -67,14 +85,16 @@ def video_shot(args):
 	create_directory(output_segmentation_directory, file_name_save, file_video_save, file_audio_save)
 	file_input_name = ogg_video_path
 	capture = init_extract.createCapture(file_input_name)
+	video_duration = get_video_duration(ogg_video_path)
 	fps = cvGetCaptureProperty(capture, CV_CAP_PROP_FPS)
-	total_frames = round(get_video_duration(ogg_video_path) * fps, 0)
+	total_frames = round(video_duration * fps, 0)
 	frames_bloc = int(total_frames / ncpus)
-	captures[1] = init_extract.createCapture(file_input_name)
+	split_video(temporary_directory, ncpus, video_duration, ogg_video_path)
+	list_videos_path = get_videos_path(temporary_directory)
+	captures[1] = init_extract.createCapture(list_videos_path[0])
 	cvSaveImage(file_name_save + 'trans_time_1.jpg', init_extract.initFrameCapture(captures[1]))
 	for i in range(2, ncpus + 1):
-		captures[i] = init_extract.createCapture(file_input_name)
-		captures[i] = init_extract.pass_frames(captures[i], frames_bloc, i - 1)
+		captures[i] = init_extract.createCapture(list_videos_path[i-1])
 	print "Finding transitions..."
 	video_process.create_video_process(captures, sensitivity, frames_bloc, file_input_name, file_name_save, file_video_save, ncpus, queue_list)   
 	for i in range(ncpus):
