@@ -10,6 +10,6 @@ class Temporary(object):
         self.tempdir = tempfile.mkdtemp(prefix="temporaryVideoDirectory")
         return self.tempdir
   
-    def removeDirectory(self):
-        os.remove(self.filePath)
-        os.removedirs(self.tempdir)
+    def removeDirectory(filePath, tempdir):
+        os.remove(filePath)
+        os.removedirs(tempdir)

@@ -2,15 +2,21 @@ import os
 import shutil
 import sys
 import time
+import commands
 
 import Image
 from cutVideo import CutVideo
-from opencv.highgui import cvSaveImage, cvGetCaptureProperty, CV_CAP_PROP_FRAME_COUNT, cvQueryFrame
+from opencv.highgui import cvSaveImage, cvGetCaptureProperty, CV_CAP_PROP_FRAME_COUNT, CV_CAP_PROP_FPS, cvQueryFrame
 from multiprocessing import Process, cpu_count, Queue   
 
 from process import VideoProcess
 from shotVideo import InitExtract
 from temporary import Temporary
+
+def get_video_duration(filePath):
+        time = commands.getoutput("ffmpeg -i " + filePath + " 2>&1 | grep Duration")
+        time = time[12:20].split(':')
+        return (int(time[0]) * 3600) + (int(time[1]) * 60) + (int(time[2]))
 
 def create_directory(output_segmentation_directory, file_name_save, file_video_save, file_audio_save):
 	for files in (output_segmentation_directory, file_name_save, file_video_save, file_audio_save):
@@ -61,9 +67,8 @@ def video_shot(args):
 	create_directory(output_segmentation_directory, file_name_save, file_video_save, file_audio_save)
 	file_input_name = ogg_video_path
 	capture = init_extract.createCapture(file_input_name)
-	total_frames = cvGetCaptureProperty(capture, CV_CAP_PROP_FRAME_COUNT)
-	if total_frames == 0:
-		total_frames = 2375.0
+	fps = cvGetCaptureProperty(capture, CV_CAP_PROP_FPS)
+	total_frames = round(get_video_duration(ogg_video_path) * fps, 0)
 	frames_bloc = int(total_frames / ncpus)
 	captures[1] = init_extract.createCapture(file_input_name)
 	cvSaveImage(file_name_save + 'trans_time_1.jpg', init_extract.initFrameCapture(captures[1]))
