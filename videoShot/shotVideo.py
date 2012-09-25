@@ -2,7 +2,7 @@ from opencv.highgui import cvCreateFileCapture, cvQueryFrame, cvSaveImage, cvGet
 from opencv.cv import cvCloneImage
 from opencv.adaptors import Ipl2PIL
 from imageManipulation import ImageManipulation
-from politics import  HistogramPolitic
+from policies import  HistogramPolicy
 import os
 
 class InitExtract(object):
@@ -67,17 +67,17 @@ class ShotVideo(object):
     def shotDetect(self,queue, capture, sensitivity, number_frame, frames_bloc, file_name, file_name_save, file_video_save, ncpu, ncpus): 
         self.number_frame = number_frame
         self.fps = cvGetCaptureProperty(capture, CV_CAP_PROP_FPS)
-        histogramPolitic = HistogramPolitic()
+        histogramPolicy  = HistogramPolicy()
         imageManipulation = ImageManipulation()
         frameA, frameB, frameC = self.passFrame(capture) 
         vetImg = self.initLoadFrames(frameA, frameB)
         frameAHistogram = imageManipulation.createHistogramBoxes(vetImg, 0)
         frameBHistogram = imageManipulation.createHistogramBoxes(vetImg, 1)
-        limiar = histogramPolitic.calculateSensitivity(sensitivity, vetImg[0])   
+        limiar = histogramPolicy.calculateSensitivity(sensitivity, vetImg[0])   
         while not(frameC is None) and (self.number_frame<= frames_bloc):
             vetImg = self.atualizeVetImg(vetImg, Ipl2PIL(frameC))
             frameCHistogram = imageManipulation.createHistogramBoxes(vetImg, 2)
-            if histogramPolitic.verifyTransition(frameAHistogram, frameBHistogram, frameCHistogram, limiar) and (self.number_frame - self.lastSaved) > 20:         
+            if histogramPolicy.verifyTransition(frameAHistogram, frameBHistogram, frameCHistogram, limiar) and (self.number_frame - self.lastSaved) > 20:         
                 self.saveTransition(file_name_save, frames_bloc, vetImg) 
             frameA, frameB, frameC = self.atualizeVar(frameA, frameB, frameC, capture) 	
             frameAHistogram = frameBHistogram

@@ -1,9 +1,9 @@
 import Image
 
-class HistogramPolitic(object):
+class HistogramPolicy(object):
     
     
-    def calculateSizeBox ( self, frame, totalHorizontalDivisions = 4, totalVerticalDivisions = 4 ):
+    def calculateSizeBox( self, frame, totalHorizontalDivisions = 4, totalVerticalDivisions = 4):
         sizeBox = [0,0]
         sizeBox[0] = frame.size[0] / totalHorizontalDivisions  
         sizeBox[1] = frame.size[1] / totalVerticalDivisions   
@@ -24,13 +24,13 @@ class HistogramPolitic(object):
         return sensitivity < diferenceSum
 
     def verifyTransition(self, frameAHistogram, frameBHistogram, frameCHistogram, sensitivity):
-        backwardDiference = self.calculateBoxesHistogramDiference( frameAHistogram, frameBHistogram )
-        forwardDiference = self.calculateBoxesHistogramDiference( frameBHistogram, frameCHistogram )
-        if not( self.potentialShot( forwardDiference, sensitivity ) ) and ( self.potentialShot( backwardDiference, sensitivity ) ):
+        backwardDiference = self.calculateBoxesHistogramDiference(frameAHistogram, frameBHistogram)
+        forwardDiference = self.calculateBoxesHistogramDiference(frameBHistogram, frameCHistogram)
+        if not(self.potentialShot(forwardDiference, sensitivity)) and (self.potentialShot( backwardDiference, sensitivity)):
                 return True
         return False
 
-    def calculateSensitivity ( self, sensitivityPercentage, frame ):
+    def calculateSensitivity (self, sensitivityPercentage, frame):
         totalBoxPixels = frame.size[0] * frame.size[1]
-        sensitivity = int( totalBoxPixels * sensitivityPercentage )
+        sensitivity = int( totalBoxPixels * sensitivityPercentage)
         return sensitivity
