@@ -7,7 +7,8 @@ class Temporary(object):
 
     
     def createDirectory(self):
-        return tempfile.mkdtemp(prefix="temporaryVideoDirectory")
+        tempdir = tempfile.mkdtemp(prefix="temporaryVideoDirectory")
+        return tempdir
   
     def removeDirectory(self, tempdir):
         shutil.rmtree(tempdir)
