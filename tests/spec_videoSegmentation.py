@@ -19,3 +19,11 @@ class VideoSegmentationSpec(unittest.TestCase):
 		output_video_path = os.path.join(temp, '/video_converted.ogg')
 		self.get_mimetype(output_video_path) |should| equal_to('video/x-theora+ogg')
 		shutil.rmtree(temp)
+
+	def test_get_output_audio(self):
+		path_audio_save = tempfile.mkdtemp()
+		input_video_path = os.path.join(os.getcwd(), 'resources/test-part.ogv')
+		videoSegmentation.get_output_audio(path_audio_save, input_video_path)
+		path_audio_file = os.path.join(path_audio_save, 'audio_video.oga')
+		self.get_mimetype(path_audio_file) |should| equal_to('audio/x-vorbis+ogg')
+		shutil.rmtree(path_audio_save)		
