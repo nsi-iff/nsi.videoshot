@@ -26,4 +26,8 @@ class VideoSegmentationSpec(unittest.TestCase):
 		videoSegmentation.get_output_audio(path_audio_save, input_video_path)
 		path_audio_file = os.path.join(path_audio_save, 'audio_video.oga')
 		self.get_mimetype(path_audio_file) |should| equal_to('audio/x-vorbis+ogg')
-		shutil.rmtree(path_audio_save)		
+		shutil.rmtree(path_audio_save)
+
+	def test_get_video_duration(self):
+		input_video_path = os.path.join(os.getcwd(), 'resources/test-part.ogv')
+		videoSegmentation.get_video_duration(input_video_path) |should| equal_to(5)
