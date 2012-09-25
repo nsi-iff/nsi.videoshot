@@ -30,7 +30,7 @@ class HistogramPolicy(object):
                 return True
         return False
 
-    def calculateSensitivity (self, sensitivityPercentage, frame):
+    def calculateSensitivity(self, sensitivityPercentage, frame):
         totalBoxPixels = frame.size[0] * frame.size[1]
-        sensitivity = int( totalBoxPixels * sensitivityPercentage)
+        sensitivity = int(totalBoxPixels * sensitivityPercentage)
         return sensitivity
