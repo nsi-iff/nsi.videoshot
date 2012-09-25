@@ -14,7 +14,7 @@ from shotVideo import InitExtract
 from temporary import Temporary
 
 def convert_video_to_ogg(file_input_name, temporary_directory):
-	os.system("ffmpeg -i " + file_input_name + " -acodec libvorbis -vcodec libtheora " + temporary_directory +"/video_converted.ogg > /dev/null 2>&1")	
+	os.system("ffmpeg -i " + file_input_name + " -acodec libvorbis -vcodec libtheora " + temporary_directory +"/video_converted.ogv > /dev/null 2>&1")	
 
 def create_directory(output_segmentation_directory, file_name_save, file_video_save, file_audio_save):
 	for files in (output_segmentation_directory, file_name_save, file_video_save, file_audio_save):
