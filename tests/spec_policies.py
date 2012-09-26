@@ -5,7 +5,7 @@ from should_dsl import should
 from videoShot import policies
 
 
-class VideoSegmentationSpec(unittest.TestCase):
+class HistogramPolicySpec(unittest.TestCase):
 
 	def setUp(self):
 		self.policy = policies.HistogramPolicy()
