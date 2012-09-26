@@ -16,8 +16,8 @@ from temporary import Temporary
 def convert_video_to_ogg(file_input_name, temporary_directory):
     os.system("ffmpeg -i " + file_input_name + " -acodec libvorbis -vcodec libtheora " + temporary_directory +"/video_converted.ogg > /dev/null 2>&1")  
 
-def create_directory(output_segmentation_directory, file_name_save, file_video_save, file_audio_save):
-    for files in (output_segmentation_directory, file_name_save, file_video_save, file_audio_save):
+def create_directory(directories):
+    for files in (directories):
         try:
             shutil.rmtree(files)
         except:
@@ -58,6 +58,11 @@ def split_video(temporary_directory, ncpus, video_duration, ogg_video_path):
     for n in range(ncpus):
         os.system('ffmpeg -i ' + ogg_video_path + ' -acodec copy -vcodec copy -ss ' + str(cut_list[n]) + ' -t ' + str(cut_list[n+1] - cut_list[n]) + ' ' + temporary_directory + '/video__' + str(n+1) + '.ogv > /dev/null 2>&1')
 
+def get_video_thumbnails(videos_path, thumbnails_save_path, size='160x120'):
+    for n, video_path in enumerate(os.listdir(videos_path)):
+        os.system("cd " + videos_path + " && ffmpeg  -itsoffset -4  -i " + video_path + " -vcodec mjpeg -vframes 1 -an -f rawvideo -s " + 
+                size + " " + thumbnails_save_path + "/thumbnail" + str(n) + ".jpg > /dev/null 2>&1")
+
 def video_shot(args):
     start_time = time.time()
     captures = {}
@@ -84,7 +89,8 @@ def video_shot(args):
     file_name_save = (output_segmentation_directory + '/transitions_video/')
     file_video_save = (output_segmentation_directory + '/parts_videos/')
     file_audio_save = (output_segmentation_directory + '/video_audio/')
-    create_directory(output_segmentation_directory, file_name_save, file_video_save, file_audio_save)
+    thumbnails_save_path = (output_segmentation_directory + '/thumbnails/')
+    create_directory([output_segmentation_directory, file_name_save, file_video_save, file_audio_save, thumbnails_save_path])
     file_input_name = ogg_video_path
     capture = init_extract.createCapture(file_input_name)
     video_duration = get_video_duration(ogg_video_path)
@@ -106,6 +112,7 @@ def video_shot(args):
     print "Generating Segments..."
     video_process.create_cut_process(file_input_name, file_video_save, time_cut_list, ncpus)
     get_output_audio(file_audio_save, ogg_video_path)
+    get_video_thumbnails(file_video_save, thumbnails_save_path)
     temporary.removeDirectory(temporary_directory)
     print 
     print "Conversion Time: %.2f s" % (start_time3 - start_time2)
