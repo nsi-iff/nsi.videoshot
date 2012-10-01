@@ -3,7 +3,7 @@ import os
 
 version = '0.0.1'
 here = os.path.abspath(os.path.dirname(__file__))
-long_description = open(os.path.join(here, 'README.rst')).read()
+long_description = open(os.path.join(here, 'README.txt')).read()
 
 setup(name='videoShot',
       version=version,
