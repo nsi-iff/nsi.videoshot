@@ -6,10 +6,10 @@ clean:
 	rm -rf dependencies/ffmpeg-0.11.2/
 	rm -rf dependencies/oggvideotools-0.8a/
 
-pre_deps: yasm sys_deps easy_install pip mimetype should_dsl specloud codecs opencv PIL ffmpeg oggVideoTools clean 
+pre_deps: yasm sys_deps easy_install pip mimetype should_dsl specloud codecs opencv PIL ffmpeg oggVideoTools clean
 
 sys_deps:
-	sudo apt-get install g++ cmake libgd2-xpm-dev 
+	sudo apt-get install g++ cmake libgd2-xpm-dev
 
 yasm:
 	sudo apt-get install yasm

@@ -26,9 +26,11 @@ setup(name='videoShot',
       packages=find_packages(),
       include_package_data=True,
       zip_safe=False,
-      # install_requires=[
-      #     ''
-      # ],
+      install_requires=[
+        'PIL',
+        'specloud',
+        'should-dsl',
+      ],
       entry_points="""
       [console_scripts]
       videoShot = videoShot:vs
