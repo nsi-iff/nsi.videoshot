@@ -14,6 +14,7 @@ from shotVideo import InitExtract
 from temporary import Temporary
 
 def convert_video_to_ogg(file_input_name, temporary_directory):
+    file_input_name = file_input_name.replace(" ", "\ ")
     os.system("ffmpeg -i " + file_input_name + " -acodec libvorbis -vcodec libtheora " + temporary_directory +"/video_converted.ogg > /dev/null 2>&1")  
 
 def create_directory(directories):
@@ -36,6 +37,7 @@ def get_output_audio(file_audio_save, ogg_video_path):
     os.system("mv " + ogg_paths[1] + " " + file_audio_save + "/" + "audio_video.oga" )
 
 def get_video_duration(filePath):
+    filePath = filePath.replace(" ", "\ ")
     time = commands.getoutput("ffmpeg -i " + filePath + " 2>&1 | grep Duration")
     time = time[12:20].split(':')
     return (int(time[0]) * 3600) + (int(time[1]) * 60) + (int(time[2]))
@@ -84,7 +86,7 @@ def video_shot(args):
     start_time2 = time.time()
     convert_video_to_ogg(file_input_name, temporary_directory)
     start_time3 = time.time()
-    ogg_video_path = temporary_directory + "/video_converted.ogg"
+    ogg_video_path = os.path.join(temporary_directory, "video_converted.ogg")
     output_segmentation_directory = output_directory + '/segmentation_video/'
     file_name_save = (output_segmentation_directory + '/transitions_video/')
     file_video_save = (output_segmentation_directory + '/parts_videos/')
