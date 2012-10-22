@@ -7,7 +7,7 @@ import commands
 import Image
 from cutVideo import CutVideo
 from opencv.highgui import cvSaveImage, cvGetCaptureProperty, CV_CAP_PROP_FRAME_COUNT, CV_CAP_PROP_FPS, cvQueryFrame
-from multiprocessing import Process, cpu_count, Queue   
+from multiprocessing import Process, cpu_count, Queue
 
 from process import VideoProcess
 from shotVideo import InitExtract
@@ -15,7 +15,7 @@ from temporary import Temporary
 
 def convert_video_to_ogg(file_input_name, temporary_directory):
     file_input_name = file_input_name.replace(" ", "\ ")
-    os.system("ffmpeg -i " + file_input_name + " -acodec libvorbis -vcodec libtheora " + temporary_directory +"/video_converted.ogg > /dev/null 2>&1")  
+    os.system("ffmpeg -i " + file_input_name + " -acodec libvorbis -vcodec libtheora " + temporary_directory +"/video_converted.ogg > /dev/null 2>&1")
 
 def create_directory(directories):
     for files in (directories):
@@ -24,7 +24,7 @@ def create_directory(directories):
         except:
             pass
         os.mkdir(files)
-    
+
 def get_output_audio(file_audio_save, ogg_video_path):
     os.system("cd " + file_audio_save + "&& oggSplit " + ogg_video_path + " > /dev/null")
     codec_list_ex = ['theora_','vorbis_']
@@ -51,7 +51,7 @@ def get_videos_path(tempdir):
     return list_path
 
 def split_video(temporary_directory, ncpus, video_duration, ogg_video_path):
-    remainder = video_duration % ncpus 
+    remainder = video_duration % ncpus
     cut_time = (video_duration - remainder) / ncpus
     cut_list = []
     for n in range(ncpus):
@@ -62,7 +62,7 @@ def split_video(temporary_directory, ncpus, video_duration, ogg_video_path):
 
 def get_video_thumbnails(videos_path, thumbnails_save_path, size='160x120'):
     for n, video_path in enumerate(os.listdir(videos_path)):
-        os.system("cd " + videos_path + " && ffmpeg  -itsoffset -4  -i " + video_path + " -vcodec mjpeg -vframes 1 -an -f rawvideo -s " + 
+        os.system("cd " + videos_path + " && ffmpeg  -itsoffset -4  -i " + video_path + " -vcodec mjpeg -vframes 1 -an -f rawvideo -s " +
                 size + " " + thumbnails_save_path + "/thumbnail" + str(n) + ".jpg > /dev/null 2>&1")
 
 def video_shot(args):
@@ -92,7 +92,8 @@ def video_shot(args):
     file_video_save = (output_segmentation_directory + '/parts_videos/')
     file_audio_save = (output_segmentation_directory + '/video_audio/')
     thumbnails_save_path = (output_segmentation_directory + '/thumbnails/')
-    create_directory([output_segmentation_directory, file_name_save, file_video_save, file_audio_save, thumbnails_save_path])
+    permanent_converted_video = (output_segmentation_directory + '/video_converted/')
+    create_directory([output_segmentation_directory, file_name_save, file_video_save, file_audio_save, thumbnails_save_path, permanent_converted_video])
     file_input_name = ogg_video_path
     capture = init_extract.createCapture(file_input_name)
     video_duration = get_video_duration(ogg_video_path)
@@ -106,18 +107,20 @@ def video_shot(args):
     for i in range(2, ncpus + 1):
         captures[i] = init_extract.createCapture(list_videos_path[i-1])
     print "Finding transitions..."
-    video_process.create_video_process(captures, sensitivity, frames_bloc, file_input_name, file_name_save, file_video_save, ncpus, queue_list)   
+    video_process.create_video_process(captures, sensitivity, frames_bloc, file_input_name, file_name_save, file_video_save, ncpus, queue_list)
     for i in range(ncpus):
         cut_list.extend(queue_list[i].get())
-    cut_list = [round(x,6) for x in cut_list]        
+    cut_list = [round(x,6) for x in cut_list]
     time_cut_list = cut_video.position_cut_list(cut_list, ncpus)
     print "Generating Segments..."
     video_process.create_cut_process(file_input_name, file_video_save, time_cut_list, ncpus)
     get_output_audio(file_audio_save, ogg_video_path)
     get_video_thumbnails(file_video_save, thumbnails_save_path)
-    temporary.removeDirectory(temporary_directory)
-    print 
+    os.system("mv %s %s" % (ogg_video_path, permanent_converted_video))
+    temporary.removeDirectory()
+    del temporary
+    print
     print "Conversion Time: %.2f s" % (start_time3 - start_time2)
-    print "Segmentation Time: %.2f s" % ((time.time() - start_time) - (start_time3 - start_time2)) 
-    print "Segmentation completed in : %.2f s" % (time.time() - start_time) 
-           
+    print "Segmentation Time: %.2f s" % ((time.time() - start_time) - (start_time3 - start_time2))
+    print "Segmentation completed in : %.2f s" % (time.time() - start_time)
+
