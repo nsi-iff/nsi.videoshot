@@ -61,7 +61,9 @@ def split_video(temporary_directory, ncpus, video_duration, ogg_video_path):
         os.system('ffmpeg -i ' + ogg_video_path + ' -acodec copy -vcodec copy -ss ' + str(cut_list[n]) + ' -t ' + str(cut_list[n+1] - cut_list[n]) + ' ' + temporary_directory + '/video__' + str(n+1) + '.ogv > /dev/null 2>&1')
 
 def get_video_thumbnails(videos_path, thumbnails_save_path, size='160x120'):
-    for n, video_path in enumerate(os.listdir(videos_path)):
+    list_video = os.listdir(videos_path)
+    list_video.sort()
+    for n, video_path in enumerate(list_video):
         os.system("cd " + videos_path + " && ffmpeg  -itsoffset -4  -i " + video_path + " -vcodec mjpeg -vframes 1 -an -f rawvideo -s " +
                 size + " " + thumbnails_save_path + "/thumbnail" + str(n) + ".jpg > /dev/null 2>&1")
 
