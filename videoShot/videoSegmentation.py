@@ -117,7 +117,7 @@ def video_shot(args):
     get_output_audio(file_audio_save, ogg_video_path)
     get_video_thumbnails(file_video_save, thumbnails_save_path)
     os.system("mv %s %s" % (ogg_video_path, permanent_converted_video))
-    temporary.removeDirectory()
+    temporary.removeDirectory(temporary_directory)
     del temporary
     print
     print "Conversion Time: %.2f s" % (start_time3 - start_time2)
