@@ -27,15 +27,12 @@ def create_directory(directories):
 
 def get_output_audio(file_audio_save, ogg_video_path):
     os.system("cd " + file_audio_save + "&& oggSplit " + ogg_video_path + " > /dev/null")
-    codec_list_ex = ['theora_','vorbis_']
-    ogg_paths = []
-    list_files = []
-    for i in range(len(codec_list_ex)):
-        list_files.append(filter(lambda _file: _file.startswith(codec_list_ex[i]), os.listdir(file_audio_save))[0])
-        ogg_paths.append(os.path.join(file_audio_save, list_files[i]))
-    os.system("rm -f " + ogg_paths[0])
-    os.system("mv " + ogg_paths[1] + " " + file_audio_save + "/" + "audio_video.oga" )
-
+    for _file in os.listdir(file_audio_save):
+        if _file.startswith('theora_'):
+            os.system("rm -f " + os.path.join(file_audio_save, _file))    
+        elif _file.startswith('vorbis_'):
+            os.system("mv " + os.path.join(file_audio_save, _file) + " " + file_audio_save + "/" + "audio_video.oga" )    
+            
 def get_video_duration(filePath):
     filePath = filePath.replace(" ", "\ ")
     time = commands.getoutput("ffmpeg -i " + filePath + " 2>&1 | grep Duration")
@@ -116,7 +113,10 @@ def video_shot(args):
     time_cut_list = cut_video.position_cut_list(cut_list, ncpus)
     print "Generating Segments..."
     video_process.create_cut_process(file_input_name, file_video_save, time_cut_list, ncpus)
-    get_output_audio(file_audio_save, ogg_video_path)
+    try:
+        get_output_audio(file_audio_save, ogg_video_path)
+    except IndexError:  
+        pass
     get_video_thumbnails(file_video_save, thumbnails_save_path)
     os.system("mv %s %s" % (ogg_video_path, permanent_converted_video))
     temporary.removeDirectory(temporary_directory)
