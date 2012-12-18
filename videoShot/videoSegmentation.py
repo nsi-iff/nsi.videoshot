@@ -64,6 +64,11 @@ def get_video_thumbnails(videos_path, thumbnails_save_path, size='160x120'):
         os.system("cd " + videos_path + " && ffmpeg  -itsoffset -4  -i " + video_path + " -vcodec mjpeg -vframes 1 -an -f rawvideo -s " +
                 size + " " + thumbnails_save_path + "/thumbnail" + str(n) + ".jpg > /dev/null 2>&1")
 
+def modify_ogg_name(ogg_video_path, video_duration, temporary_directory):
+    rename = "mv "+ ogg_video_path + " " + temporary_directory +"/video_time_" + str(video_duration) + ".ogg"
+    os.system(rename)
+    return temporary_directory +"/video_time_" + str(video_duration) + ".ogg"    
+
 def video_shot(args):
     start_time = time.time()
     captures = {}
@@ -118,6 +123,7 @@ def video_shot(args):
     except IndexError:  
         pass
     get_video_thumbnails(file_video_save, thumbnails_save_path)
+    ogg_video_path = modify_ogg_name(ogg_video_path, video_duration, temporary_directory)
     os.system("mv %s %s" % (ogg_video_path, permanent_converted_video))
     temporary.removeDirectory(temporary_directory)
     del temporary

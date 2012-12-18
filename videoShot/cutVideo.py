@@ -8,7 +8,7 @@ class CutVideo(object):
         for i in range(len(corte)-1):
             inicio = corte[i]
             duracao = corte[i + 1] - inicio - 0.2
-            os.system("ffmpeg -i " + str(file_name) + " -ss " + str(inicio) + " -t " + str(duracao) + " -acodec copy -vcodec copy -ar 22050 " + str(file_video_save) + "cpu_"+str(x)+ "_part_" + str(i + 1) + ".ogg > /dev/null 2>&1")
+            os.system("ffmpeg -i " + str(file_name) + " -ss " + str(inicio) + " -t " + str(duracao) + " -acodec copy -vcodec copy -ar 22050 " + str(file_video_save) + "cpu_"+str(x)+ "_part_" + str(i + 1) + "_duration_"+ str(duracao)+".ogg > /dev/null 2>&1")
 
     def position_cut_list(self,cut_list,ncpus):
         #Algoritimo para separar os segmentos em intervalos minimos de 10s
